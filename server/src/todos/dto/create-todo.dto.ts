@@ -1,0 +1,9 @@
+import { z } from 'zod';
+import { Todo } from '../todos.service';
+
+export const CreateTodoDto = Todo.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type CreateTodoDto = z.infer<typeof CreateTodoDto>;
