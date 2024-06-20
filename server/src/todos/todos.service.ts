@@ -36,9 +36,11 @@ export class TodosService {
     return todo;
   }
 
-  async findAll(): Promise<Todo[]> {
+  async findAll(): Promise<Pick<Todo, 'id' | 'title'>[]> {
     await delay();
-    return this.todos;
+    return this.todos
+      .sort((a, b) => b.updatedAt - a.updatedAt)
+      .map(({ id, title }) => ({ id, title }));
   }
 
   async findOne(id: string): Promise<Todo | undefined> {

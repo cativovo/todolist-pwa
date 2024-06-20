@@ -27,7 +27,7 @@ export class TodosController {
   }
 
   @Get()
-  async findAll(): Promise<Todo[]> {
+  async findAll(): Promise<Pick<Todo, 'id' | 'title'>[]> {
     return await this.todosService.findAll();
   }
 
