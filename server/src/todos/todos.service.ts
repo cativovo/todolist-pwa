@@ -65,7 +65,6 @@ export class TodosService {
       ...updateTodoDto,
       updatedAt: getUnixTime(new Date()),
     };
-    debugger;
     this.todos[index] = todo;
 
     return todo;
