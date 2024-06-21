@@ -1,21 +1,32 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createTodo, findAllTodos } from "../api/todos";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import { SyntheticEvent } from "react";
+import { createTodo, findAllTodos } from "../api/todos";
 
 const findAllTodosKeys = ["findAllTodos"];
 const createTodoKeys = ["createTodo"];
-export default function Todos() {
-  const queryClient = useQueryClient();
+const findAllTodosQueryOptions = {
+  queryKey: findAllTodosKeys,
+  queryFn: findAllTodos,
+};
+
+export const Route = createFileRoute("/")({
+  loader(match) {
+    return match.context.queryClient.ensureQueryData(findAllTodosQueryOptions);
+  },
+  component: Index,
+  pendingComponent: () => <h1>loading...</h1>,
+});
+
+function Index(): JSX.Element {
+  const context = Route.useRouteContext();
+  const query = useSuspenseQuery(findAllTodosQueryOptions);
   const mutation = useMutation({
     mutationKey: createTodoKeys,
     mutationFn: createTodo,
     onSuccess() {
-      queryClient.invalidateQueries({ queryKey: findAllTodosKeys });
+      context.queryClient.invalidateQueries({ queryKey: findAllTodosKeys });
     },
-  });
-  const query = useQuery({
-    queryKey: findAllTodosKeys,
-    queryFn: findAllTodos,
   });
 
   async function handleSubmit(e: SyntheticEvent): Promise<void> {
@@ -27,7 +38,6 @@ export default function Todos() {
 
     const title = target.title.value;
     const description = target.description.value;
-    console.log({ title, description });
     mutation.mutate({ title, description });
   }
 
@@ -42,7 +52,6 @@ export default function Todos() {
         <input name="description" />
         <button type="submit">submit</button>
       </form>
-      {query.isPending && <p>loading...</p>}
       {query.isError && (
         <>
           <p>something went wrong</p>
