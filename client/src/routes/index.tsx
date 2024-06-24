@@ -1,5 +1,5 @@
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { SyntheticEvent } from "react";
 import { createTodo, findAllTodos } from "../api/todos";
 
@@ -62,7 +62,13 @@ function Index(): JSX.Element {
         {isInProgress && (
           <li style={{ background: "gray" }}>{mutation.variables.title}</li>
         )}
-        {query.data?.map((todo) => <li key={todo.id}>{todo.title}</li>)}
+        {query.data?.map((todo) => (
+          <li key={todo.id}>
+            <Link to="/todo/$id" params={{ id: todo.id }}>
+              {todo.title}
+            </Link>
+          </li>
+        ))}
       </ul>
     </div>
   );
