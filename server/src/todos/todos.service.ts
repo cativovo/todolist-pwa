@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { getUnixTime } from 'date-fns';
+import { nanoid } from 'nanoid';
+import sleep from 'src/sleep';
+import { z } from 'zod';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { z } from 'zod';
-import { nanoid } from 'nanoid';
-import { getUnixTime } from 'date-fns';
 
 export const Todo = z.object({
   id: z.string(),
@@ -14,16 +15,12 @@ export const Todo = z.object({
 });
 export type Todo = z.infer<typeof Todo>;
 
-function delay(ms = 500): Promise<void> {
-  return new Promise((res) => setTimeout(res, ms));
-}
-
 @Injectable()
 export class TodosService {
   private todos: Todo[] = [];
 
   async create(createTodoDto: CreateTodoDto): Promise<Todo> {
-    await delay();
+    await sleep();
     const now = getUnixTime(new Date());
     const todo: Todo = {
       ...createTodoDto,
@@ -37,14 +34,14 @@ export class TodosService {
   }
 
   async findAll(): Promise<Pick<Todo, 'id' | 'title'>[]> {
-    await delay();
+    await sleep();
     return this.todos
       .sort((a, b) => b.updatedAt - a.updatedAt)
       .map(({ id, title }) => ({ id, title }));
   }
 
   async findOne(id: string): Promise<Todo | undefined> {
-    await delay();
+    await sleep();
     const todo = this.todos.find((v) => v.id === id);
     return todo;
   }
@@ -53,7 +50,7 @@ export class TodosService {
     id: string,
     updateTodoDto: UpdateTodoDto,
   ): Promise<Todo | undefined> {
-    await delay();
+    await sleep();
     const index = this.todos.findIndex((v) => v.id === id);
 
     if (index < 0) {
@@ -71,7 +68,7 @@ export class TodosService {
   }
 
   async remove(id: string): Promise<void> {
-    await delay();
+    await sleep();
     this.todos = this.todos.filter((v) => v.id !== id);
   }
 }
