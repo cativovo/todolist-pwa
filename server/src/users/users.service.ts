@@ -9,6 +9,9 @@ export const User = z.object({
 });
 export type User = z.infer<typeof User>;
 
+export const UserWithoutPassword = User.omit({ password: true });
+export type UserWithoutPassword = z.infer<typeof UserWithoutPassword>;
+
 @Injectable()
 export class UsersService {
   private users: User[] = [
@@ -26,6 +29,12 @@ export class UsersService {
 
   async findUserByUsername(username: string): Promise<User | undefined> {
     await sleep();
-    return this.users.find((v) => v.username === username);
+    const user = this.users.find((v) => v.username === username);
+
+    if (!user) {
+      return undefined;
+    }
+
+    return { ...user };
   }
 }
