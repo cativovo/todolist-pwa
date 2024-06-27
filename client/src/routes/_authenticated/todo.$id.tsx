@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { findTodoById } from "../api/todos";
+import { findTodoById } from "../../api/todos";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { formatDate } from "date-fns";
 
@@ -12,7 +12,7 @@ function findTodoByIdQueryOptions(id: string) {
   };
 }
 
-export const Route = createFileRoute("/todo/$id")({
+export const Route = createFileRoute("/_authenticated/todo/$id")({
   component: Todo,
   loader(match) {
     return match.context.queryClient.ensureQueryData(

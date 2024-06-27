@@ -3,10 +3,16 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Post,
+  Req,
   Session,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
+import { FastifyRequest } from 'fastify';
+import { AuthGuard } from 'src/guards';
 import { ZodValidationPipe } from 'src/pipes';
 import sleep from 'src/sleep';
 import { UserWithoutPassword } from 'src/users/users.service';
@@ -33,19 +39,21 @@ export class AuthController {
     return user;
   }
 
+  @UseGuards(AuthGuard)
   @Get('/me')
-  async me(@Session() session: FastifySession): Promise<UserWithoutPassword> {
+  async me(
+    @Session() session: FastifySession,
+    @Req() req: FastifyRequest,
+  ): Promise<UserWithoutPassword> {
     await sleep();
-    const user = session.get('user');
+    session.touch();
 
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
-    return user;
+    return req.user;
   }
 
+  @UseGuards(AuthGuard)
   @Post('/logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@Session() session: FastifySession): Promise<void> {
     await sleep();
     session.delete();

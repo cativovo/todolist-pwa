@@ -5,6 +5,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import fastify from 'fastify';
 import { AppModule } from './app.module';
 import { UserWithoutPassword } from './users/users.service';
 
@@ -14,10 +15,18 @@ declare module '@fastify/secure-session' {
   }
 }
 
+declare module 'fastify' {
+  interface FastifyRequest {
+    user: UserWithoutPassword;
+  }
+}
+
 async function bootstrap() {
+  const server = fastify();
+  server.decorateRequest('user', null);
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(),
+    new FastifyAdapter(server),
   );
   const configService = app.get(ConfigService);
   const port = configService.get('PORT');
@@ -26,13 +35,14 @@ async function bootstrap() {
 
   app.enableCors({
     credentials: true,
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'http://localhost:4173'],
   });
   await app.register(fastifySecureSession, {
     secret: sessionSecret,
     salt: sessionSalt,
     cookie: {
       secure: true,
+      path: '/',
     },
   });
 

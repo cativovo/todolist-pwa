@@ -8,6 +8,7 @@ import { UpdateTodoDto } from './dto/update-todo.dto';
 
 export const Todo = z.object({
   id: z.string(),
+  userId: z.string(),
   title: z.string(),
   description: z.string(),
   createdAt: z.number(),
@@ -19,7 +20,7 @@ export type Todo = z.infer<typeof Todo>;
 export class TodosService {
   private todos: Todo[] = [];
 
-  async create(createTodoDto: CreateTodoDto): Promise<Todo> {
+  async create(userId: string, createTodoDto: CreateTodoDto): Promise<Todo> {
     await sleep();
     const now = getUnixTime(new Date());
     const todo: Todo = {
@@ -27,6 +28,7 @@ export class TodosService {
       id: nanoid(),
       updatedAt: now,
       createdAt: now,
+      userId,
     };
     this.todos.push(todo);
 
@@ -40,7 +42,7 @@ export class TodosService {
       .map(({ id, title }) => ({ id, title }));
   }
 
-  async findOne(id: string): Promise<Todo | undefined> {
+  async findOne(userId: string, id: string): Promise<Todo | undefined> {
     await sleep();
     const todo = this.todos.find((v) => v.id === id);
     return todo;

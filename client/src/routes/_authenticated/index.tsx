@@ -1,16 +1,15 @@
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { SyntheticEvent } from "react";
-import { createTodo, findAllTodos } from "../api/todos";
+import { createTodo, findAllTodos } from "../../api/todos";
+import { findAllTodosQueryKey } from "../../query-keys";
 
-const findAllTodosKeys = ["findAllTodos"];
-const createTodoKeys = ["createTodo"];
 const findAllTodosQueryOptions = {
-  queryKey: findAllTodosKeys,
+  queryKey: findAllTodosQueryKey,
   queryFn: findAllTodos,
 };
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   loader(match) {
     return match.context.queryClient.ensureQueryData(findAllTodosQueryOptions);
   },
@@ -22,10 +21,9 @@ function Index(): JSX.Element {
   const context = Route.useRouteContext();
   const query = useSuspenseQuery(findAllTodosQueryOptions);
   const mutation = useMutation({
-    mutationKey: createTodoKeys,
     mutationFn: createTodo,
     onSuccess() {
-      context.queryClient.invalidateQueries({ queryKey: findAllTodosKeys });
+      context.queryClient.invalidateQueries({ queryKey: findAllTodosQueryKey });
     },
   });
 

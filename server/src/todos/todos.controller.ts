@@ -9,21 +9,27 @@ import {
   Param,
   Patch,
   Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
+import { FastifyRequest } from 'fastify';
+import { AuthGuard } from 'src/guards';
 import { ZodValidationPipe } from 'src/pipes';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { Todo, TodosService } from './todos.service';
 
+@UseGuards(AuthGuard)
 @Controller('todos')
 export class TodosController {
   constructor(private readonly todosService: TodosService) {}
 
   @Post()
   async create(
+    @Req() req: FastifyRequest,
     @Body(new ZodValidationPipe(CreateTodoDto)) createTodoDto: CreateTodoDto,
   ): Promise<Todo> {
-    return await this.todosService.create(createTodoDto);
+    return await this.todosService.create(req.user.id, createTodoDto);
   }
 
   @Get()
@@ -32,8 +38,11 @@ export class TodosController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Todo> {
-    const todo = await this.todosService.findOne(id);
+  async findOne(
+    @Req() req: FastifyRequest,
+    @Param('id') id: string,
+  ): Promise<Todo> {
+    const todo = await this.todosService.findOne(req.user.id, id);
 
     if (!todo) {
       throw new NotFoundException('Todo not found');
@@ -44,6 +53,7 @@ export class TodosController {
 
   @Patch(':id')
   async update(
+    @Req() req: FastifyRequest,
     @Param('id') id: string,
     @Body(new ZodValidationPipe(UpdateTodoDto)) updateTodoDto: UpdateTodoDto,
   ): Promise<Todo> {
@@ -58,7 +68,10 @@ export class TodosController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(
+    @Req() req: FastifyRequest,
+    @Param('id') id: string,
+  ): Promise<void> {
     return await this.todosService.remove(id);
   }
 }
