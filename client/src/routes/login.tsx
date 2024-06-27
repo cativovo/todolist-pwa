@@ -3,6 +3,7 @@ import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { SyntheticEvent } from "react";
 import { login } from "../api/auth";
 import { meQueryKey } from "../query-keys";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -47,9 +48,9 @@ function Login(): JSX.Element {
       <form onSubmit={handleSubmit}>
         <input type="text" name="username" />
         <input type="password" name="password" />
-        <button type="submit" disabled={mutation.isPending}>
+        <Button type="submit" disabled={mutation.isPending}>
           login
-        </button>
+        </Button>
       </form>
     </div>
   );
