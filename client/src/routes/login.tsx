@@ -1,9 +1,27 @@
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
-import { SyntheticEvent } from "react";
+import { Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { login } from "../api/auth";
 import { meQueryKey } from "../query-keys";
-import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -17,6 +35,12 @@ export const Route = createFileRoute("/login")({
   },
 });
 
+const LoginFormSchema = z.object({
+  username: z.string(),
+  password: z.string(),
+});
+type LoginFormSchema = z.infer<typeof LoginFormSchema>;
+
 function Login(): JSX.Element {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -28,30 +52,63 @@ function Login(): JSX.Element {
       router.invalidate();
     },
   });
+  const form = useForm<LoginFormSchema>({
+    resolver: zodResolver(LoginFormSchema),
+  });
 
-  function handleSubmit(e: SyntheticEvent): void {
-    e.preventDefault();
-    const target = e.target as typeof e.target & {
-      username: { value: string };
-      password: { value: string };
-    };
-
-    const username = target.username.value;
-    const password = target.password.value;
-
-    mutation.mutate({ username, password });
+  function handleSubmit(values: LoginFormSchema) {
+    mutation.mutate(values);
   }
 
+  const buttonsDisabled = mutation.isPending || mutation.isSuccess;
+
   return (
-    <div>
-      {mutation.isError && <p>invalid username/password</p>}
-      <form onSubmit={handleSubmit}>
-        <input type="text" name="username" />
-        <input type="password" name="password" />
-        <Button type="submit" disabled={mutation.isPending}>
-          login
-        </Button>
-      </form>
+    <div className="flex items-center justify-center h-screen">
+      <Card className="w-[350px]">
+        <CardHeader>
+          <CardTitle className="text-center">Login</CardTitle>
+        </CardHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)}>
+            <CardContent className="flex flex-col gap-3">
+              <FormField
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username:</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password:</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="password" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+            <CardFooter className="flex gap-2 justify-end">
+              <Button type="submit" disabled={buttonsDisabled}>
+                {mutation.isPending && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Login
+              </Button>
+              {/* TODO: redirect to signup page */}
+              <Button type="button" disabled={buttonsDisabled}>
+                Sign up
+              </Button>
+            </CardFooter>
+          </form>
+        </Form>
+      </Card>
     </div>
   );
 }
