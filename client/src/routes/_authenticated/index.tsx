@@ -1,8 +1,8 @@
+import { createTodo, findAllTodos } from "@/api/todos";
+import { findAllTodosQueryKey } from "@/query-keys";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { SyntheticEvent } from "react";
-import { createTodo, findAllTodos } from "../../api/todos";
-import { findAllTodosQueryKey } from "../../query-keys";
 
 const findAllTodosQueryOptions = {
   queryKey: findAllTodosQueryKey,

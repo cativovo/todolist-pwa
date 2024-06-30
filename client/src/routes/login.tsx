@@ -1,3 +1,4 @@
+import { login, me } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,22 +16,22 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { login } from "../api/auth";
-import { meQueryKey } from "../query-keys";
+
+const redirectOpts = {
+  to: "/",
+  replace: true,
+};
 
 export const Route = createFileRoute("/login")({
   component: Login,
-  beforeLoad({ context }) {
+  async beforeLoad({ context }) {
     if (context.user) {
-      throw redirect({
-        to: "/",
-        replace: true,
-      });
+      throw redirect(redirectOpts);
     }
   },
 });
@@ -43,12 +44,10 @@ type LoginFormSchema = z.infer<typeof LoginFormSchema>;
 
 function Login(): JSX.Element {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationKey: ["login"],
     mutationFn: login,
-    onSuccess(user) {
-      queryClient.setQueryData(meQueryKey, () => user);
+    onSuccess() {
       router.invalidate();
     },
   });

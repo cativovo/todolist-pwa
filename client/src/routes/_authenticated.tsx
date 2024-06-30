@@ -1,10 +1,15 @@
+import { logout, me } from "@/api/auth";
 import { useMutation } from "@tanstack/react-query";
-import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
-import { logout } from "../api/auth";
+import {
+  Outlet,
+  createFileRoute,
+  redirect,
+  useRouter,
+} from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated")({
   component: Authenticated,
-  beforeLoad({ context }) {
+  async beforeLoad({ context }) {
     if (!context.user) {
       throw redirect({
         to: "/login",
@@ -15,10 +20,11 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function Authenticated() {
+  const router = useRouter();
   const mutation = useMutation({
     mutationFn: logout,
     onSettled() {
-      window.location.href = "/login";
+      router.invalidate();
     },
   });
   const context = Route.useRouteContext();

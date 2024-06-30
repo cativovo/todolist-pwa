@@ -1,6 +1,6 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { findTodoById } from "../../api/todos";
+import { findTodoById } from "@/api/todos";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { formatDate } from "date-fns";
 
 function findTodoByIdQueryOptions(id: string) {
