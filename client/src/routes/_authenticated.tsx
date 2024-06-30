@@ -1,5 +1,5 @@
-import { logout, me } from "@/api/auth";
-import { useMutation } from "@tanstack/react-query";
+import { logout } from "@/api/auth";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Outlet,
   createFileRoute,
@@ -20,10 +20,12 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function Authenticated() {
+  const queryClient = useQueryClient();
   const router = useRouter();
   const mutation = useMutation({
     mutationFn: logout,
     onSettled() {
+      queryClient.clear();
       router.invalidate();
     },
   });
