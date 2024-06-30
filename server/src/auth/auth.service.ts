@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import {
-  User,
-  UserWithoutPassword,
-  UsersService,
-} from 'src/users/users.service';
+import { User, UserWithoutPassword } from 'src/users/schemas/user';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
@@ -12,11 +9,11 @@ export class AuthService {
   async login(
     username: string,
     password: string,
-  ): Promise<UserWithoutPassword | undefined> {
+  ): Promise<UserWithoutPassword | null> {
     const user = await this.userService.findUserByUsername(username);
 
     if (user?.password !== password) {
-      return undefined;
+      return null;
     }
 
     delete (user as Partial<User>).password;

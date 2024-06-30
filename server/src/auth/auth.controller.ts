@@ -15,7 +15,7 @@ import { FastifyRequest } from 'fastify';
 import { AuthGuard } from 'src/guards';
 import { ZodValidationPipe } from 'src/pipes';
 import sleep from 'src/sleep';
-import { UserWithoutPassword } from 'src/users/users.service';
+import { UserWithoutPassword } from 'src/users/schemas/user';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 
