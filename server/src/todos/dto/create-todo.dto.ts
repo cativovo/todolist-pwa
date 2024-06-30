@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Todo } from '../todos.service';
+import { Todo } from '../schemas/todo';
 
 export const CreateTodoDto = Todo.pick({
   title: true,

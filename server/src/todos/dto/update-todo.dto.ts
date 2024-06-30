@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { CreateTodoDto } from './create-todo.dto';
+import { Todo } from '../schemas/todo';
 
-export const UpdateTodoDto = CreateTodoDto.partial();
+export const UpdateTodoDto = Todo.pick({
+  title: true,
+  description: true,
+  status: true,
+}).partial();
 export type UpdateTodoDto = z.infer<typeof UpdateTodoDto>;

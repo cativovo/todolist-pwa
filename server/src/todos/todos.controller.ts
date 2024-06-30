@@ -17,7 +17,8 @@ import { AuthGuard } from 'src/guards';
 import { ZodValidationPipe } from 'src/pipes';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { Todo, TodosService } from './todos.service';
+import { TodosService } from './todos.service';
+import { Todo } from './schemas/todo';
 
 @UseGuards(AuthGuard)
 @Controller('todos')

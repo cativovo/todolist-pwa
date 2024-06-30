@@ -1,10 +1,10 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export enum StatusTodo {
-  Todo = "todo",
-  InProgress = "inprogress",
-  Done = "done",
-  Cancelled = "cancelled",
+  Todo = 'todo',
+  InProgress = 'inprogress',
+  Done = 'done',
+  Cancelled = 'cancelled',
 }
 
 export const Todo = z.object({

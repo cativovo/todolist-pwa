@@ -2,19 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { getUnixTime } from 'date-fns';
 import { nanoid } from 'nanoid';
 import sleep from 'src/sleep';
-import { z } from 'zod';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-
-export const Todo = z.object({
-  id: z.string(),
-  userId: z.string(),
-  title: z.string(),
-  description: z.string(),
-  createdAt: z.number(),
-  updatedAt: z.number(),
-});
-export type Todo = z.infer<typeof Todo>;
+import { Todo, StatusTodo } from './schemas/todo';
 
 @Injectable()
 export class TodosService {
@@ -29,34 +19,37 @@ export class TodosService {
       updatedAt: now,
       createdAt: now,
       userId,
+      status: StatusTodo.Todo,
     };
     this.todos.push(todo);
 
     return todo;
   }
 
-  async findAll(): Promise<Pick<Todo, 'id' | 'title'>[]> {
+  async findAll(): Promise<Pick<Todo, 'id' | 'title' | 'status'>[]> {
     await sleep();
     return this.todos
       .sort((a, b) => b.updatedAt - a.updatedAt)
-      .map(({ id, title }) => ({ id, title }));
+      .map(({ id, title, status }) => ({ id, title, status }));
   }
 
-  async findOne(userId: string, id: string): Promise<Todo | undefined> {
+  async findOne(userId: string, id: string): Promise<Todo | null> {
     await sleep();
-    const todo = this.todos.find((v) => v.id === id);
-    return todo;
+    const todo = this.todos.find((v) => v.id === id && v.userId === userId);
+
+    if (!todo) {
+      return null;
+    }
+
+    return { ...todo };
   }
 
-  async update(
-    id: string,
-    updateTodoDto: UpdateTodoDto,
-  ): Promise<Todo | undefined> {
+  async update(id: string, updateTodoDto: UpdateTodoDto): Promise<Todo | null> {
     await sleep();
     const index = this.todos.findIndex((v) => v.id === id);
 
     if (index < 0) {
-      return undefined;
+      return null;
     }
 
     const todo = {
