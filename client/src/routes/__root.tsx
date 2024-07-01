@@ -15,7 +15,6 @@ export const Route = createRootRouteWithContext<{
   async beforeLoad() {
     try {
       const user = await me();
-
       return {
         user,
       };

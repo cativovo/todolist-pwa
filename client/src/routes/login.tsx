@@ -22,16 +22,17 @@ import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const redirectOpts = {
-  to: "/",
-  replace: true,
-};
-
 export const Route = createFileRoute("/login")({
+  validateSearch: z.object({
+    redirect: z.string().optional().catch(""),
+  }),
   component: Login,
-  async beforeLoad({ context }) {
+  async beforeLoad({ context, search }) {
     if (context.user) {
-      throw redirect(redirectOpts);
+      throw redirect({
+        to: search.redirect || "/",
+        replace: true,
+      });
     }
   },
 });
