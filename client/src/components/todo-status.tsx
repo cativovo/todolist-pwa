@@ -9,6 +9,7 @@ type TodoStatusProps = {
   className?: ClassValue;
 };
 
+// https://tailwindcss.com/docs/content-configuration#dynamic-class-names
 function getDisplay(status: TodoStatusProps["status"]): {
   icon: ReactNode;
   label: string;
@@ -19,28 +20,28 @@ function getDisplay(status: TodoStatusProps["status"]): {
       return {
         icon: <Timer />,
         label: "Todo",
-        color: "#85C1E9",
+        color: "bg-[#85C1E9]",
       };
     }
     case StatusTodo.InProgress: {
       return {
         icon: <Circle />,
         label: "In Progress",
-        color: "#F8C471",
+        color: "bg-[#F8C471]",
       };
     }
     case StatusTodo.Done: {
       return {
         icon: <CircleCheckBig />,
         label: "Done",
-        color: "#82E0AA",
+        color: "bg-[#82E0AA]",
       };
     }
     case StatusTodo.Cancelled: {
       return {
         icon: <CircleSlash2 />,
         label: "Cancelled",
-        color: "#F5B7B1",
+        color: "bg-[#F5B7B1]",
       };
     }
     default:
@@ -58,11 +59,7 @@ export default function TodoStatus(props: TodoStatusProps) {
 
   return (
     <div
-      className={cn(
-        "flex gap-2 rounded-md px-2 py-1",
-        `bg-[${color}]`,
-        props.className,
-      )}
+      className={cn("flex gap-2 rounded-md px-2 py-1", color, props.className)}
     >
       {icon}
       {label}
