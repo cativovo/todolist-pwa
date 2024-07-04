@@ -7,8 +7,10 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -18,31 +20,42 @@ import { ZodValidationPipe } from 'src/pipes';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodosService } from './todos.service';
-import { Todo } from './schemas/todo';
 
 @UseGuards(AuthGuard)
 @Controller('todos')
 export class TodosController {
-  constructor(private readonly todosService: TodosService) {}
+  constructor(private readonly todosService: TodosService) {
+    todosService.seed(101);
+  }
 
   @Post()
   async create(
     @Req() req: FastifyRequest,
     @Body(new ZodValidationPipe(CreateTodoDto)) createTodoDto: CreateTodoDto,
-  ): Promise<Todo> {
+  ) {
     return await this.todosService.create(req.user.id, createTodoDto);
   }
 
   @Get()
-  async findAll(): Promise<Pick<Todo, 'id' | 'title'>[]> {
-    return await this.todosService.findAll();
+  async findAll(
+    @Req() req: FastifyRequest,
+    @Query('page', new ParseIntPipe({ optional: true })) page = 1,
+  ) {
+    const limit = 10;
+    const offset = (page - 1) * limit;
+    const result = await this.todosService.findAll(req.user.id, {
+      limit,
+      offset,
+    });
+
+    return {
+      todos: result.todos,
+      pages: Math.ceil(result.count / limit),
+    };
   }
 
   @Get(':id')
-  async findOne(
-    @Req() req: FastifyRequest,
-    @Param('id') id: string,
-  ): Promise<Todo> {
+  async findOne(@Req() req: FastifyRequest, @Param('id') id: string) {
     const todo = await this.todosService.findOne(req.user.id, id);
 
     if (!todo) {
@@ -57,7 +70,7 @@ export class TodosController {
     @Req() req: FastifyRequest,
     @Param('id') id: string,
     @Body(new ZodValidationPipe(UpdateTodoDto)) updateTodoDto: UpdateTodoDto,
-  ): Promise<Todo> {
+  ) {
     const todo = await this.todosService.update(id, updateTodoDto);
 
     if (!todo) {
@@ -69,10 +82,7 @@ export class TodosController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  async remove(
-    @Req() req: FastifyRequest,
-    @Param('id') id: string,
-  ): Promise<void> {
+  async remove(@Req() req: FastifyRequest, @Param('id') id: string) {
     return await this.todosService.remove(id);
   }
 }

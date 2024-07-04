@@ -1,4 +1,5 @@
 import { logout } from "@/api/auth";
+import { setUser } from "@/lib/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Outlet,
@@ -9,22 +10,14 @@ import {
 
 export const Route = createFileRoute("/_authenticated")({
   component: Authenticated,
-  beforeLoad({ context, location }) {
+  beforeLoad({ context }) {
     if (!context.user) {
       context.queryClient.clear();
       throw redirect({
         to: "/login",
         replace: true,
-        search: {
-          // Use the current location to power a redirect after login
-          // (Do not use `router.state.resolvedLocation` as it can
-          // potentially lag behind the actual current location)
-          redirect: location.href,
-        },
       });
     }
-
-    return context;
   },
 });
 
@@ -33,9 +26,10 @@ function Authenticated() {
   const router = useRouter();
   const mutation = useMutation({
     mutationFn: logout,
-    onSettled() {
+    async onSettled() {
+      setUser(null);
       queryClient.clear();
-      router.invalidate();
+      await router.invalidate();
     },
   });
   const context = Route.useRouteContext();

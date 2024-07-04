@@ -2,8 +2,17 @@ import { z } from "zod";
 import { Todo } from "../schema/todo";
 import { ApiPath, api } from "./client";
 
-export async function findAllTodos(): Promise<Todo[]> {
-  return await api.get(ApiPath.Todos).json();
+export type FindTodosResult = {
+  todos: Todo[];
+  pages: number;
+};
+export type FindTodosSearchParams = {
+  page?: number;
+};
+export async function findTodos(
+  params: FindTodosSearchParams,
+): Promise<FindTodosResult> {
+  return await api.get(ApiPath.Todos, { searchParams: params }).json();
 }
 
 export async function findTodoById(id: string): Promise<Todo> {

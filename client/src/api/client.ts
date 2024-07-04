@@ -1,3 +1,4 @@
+import { setUser } from "@/lib/user";
 import { router } from "@/router";
 import ky from "ky";
 
@@ -8,6 +9,7 @@ export const api = ky.create({
     afterResponse: [
       async (_input, _options, response) => {
         if (response.status === 401 && !response.url.includes("/auth/me")) {
+          setUser(null);
           await router.navigate({
             to: "/login",
             replace: true,
