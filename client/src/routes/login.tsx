@@ -1,4 +1,4 @@
-import { login, me } from "@/api/auth";
+import { login } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/login")({
   async beforeLoad({ context, search }) {
     if (context.user) {
       throw redirect({
-        to: search.redirect || "/",
+        to: search.redirect || "/todos",
         replace: true,
       });
     }
@@ -63,7 +63,7 @@ function Login(): JSX.Element {
   const buttonsDisabled = mutation.isPending || mutation.isSuccess;
 
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="flex h-screen items-center justify-center">
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle className="text-center">Login</CardTitle>
@@ -94,7 +94,7 @@ function Login(): JSX.Element {
                 )}
               />
             </CardContent>
-            <CardFooter className="flex gap-2 justify-end">
+            <CardFooter className="flex justify-end gap-2">
               <Button type="submit" disabled={buttonsDisabled}>
                 {mutation.isPending && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

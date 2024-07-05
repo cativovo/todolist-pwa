@@ -14,7 +14,10 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index'
-import { Route as AuthenticatedTodoIdImport } from './routes/_authenticated/todo.$id'
+import { Route as AuthenticatedTodosImport } from './routes/_authenticated/todos'
+import { Route as AuthenticatedTodosCreateTodoImport } from './routes/_authenticated/todos_/create-todo'
+import { Route as AuthenticatedTodosIdImport } from './routes/_authenticated/todos_/$id'
+import { Route as AuthenticatedTodosCreateTodoModalImport } from './routes/_authenticated/todos.create-todo.modal'
 
 // Create/Update Routes
 
@@ -33,10 +36,27 @@ const AuthenticatedIndexRoute = AuthenticatedIndexImport.update({
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 
-const AuthenticatedTodoIdRoute = AuthenticatedTodoIdImport.update({
-  path: '/todo/$id',
+const AuthenticatedTodosRoute = AuthenticatedTodosImport.update({
+  path: '/todos',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+
+const AuthenticatedTodosCreateTodoRoute =
+  AuthenticatedTodosCreateTodoImport.update({
+    path: '/todos/create-todo',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+
+const AuthenticatedTodosIdRoute = AuthenticatedTodosIdImport.update({
+  path: '/todos/$id',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+
+const AuthenticatedTodosCreateTodoModalRoute =
+  AuthenticatedTodosCreateTodoModalImport.update({
+    path: '/create-todo/modal',
+    getParentRoute: () => AuthenticatedTodosRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -56,6 +76,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
+    '/_authenticated/todos': {
+      id: '/_authenticated/todos'
+      path: '/todos'
+      fullPath: '/todos'
+      preLoaderRoute: typeof AuthenticatedTodosImport
+      parentRoute: typeof AuthenticatedImport
+    }
     '/_authenticated/': {
       id: '/_authenticated/'
       path: '/'
@@ -63,12 +90,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexImport
       parentRoute: typeof AuthenticatedImport
     }
-    '/_authenticated/todo/$id': {
-      id: '/_authenticated/todo/$id'
-      path: '/todo/$id'
-      fullPath: '/todo/$id'
-      preLoaderRoute: typeof AuthenticatedTodoIdImport
+    '/_authenticated/todos/$id': {
+      id: '/_authenticated/todos/$id'
+      path: '/todos/$id'
+      fullPath: '/todos/$id'
+      preLoaderRoute: typeof AuthenticatedTodosIdImport
       parentRoute: typeof AuthenticatedImport
+    }
+    '/_authenticated/todos/create-todo': {
+      id: '/_authenticated/todos/create-todo'
+      path: '/todos/create-todo'
+      fullPath: '/todos/create-todo'
+      preLoaderRoute: typeof AuthenticatedTodosCreateTodoImport
+      parentRoute: typeof AuthenticatedImport
+    }
+    '/_authenticated/todos/create-todo/modal': {
+      id: '/_authenticated/todos/create-todo/modal'
+      path: '/create-todo/modal'
+      fullPath: '/todos/create-todo/modal'
+      preLoaderRoute: typeof AuthenticatedTodosCreateTodoModalImport
+      parentRoute: typeof AuthenticatedTodosImport
     }
   }
 }
@@ -77,8 +118,12 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   AuthenticatedRoute: AuthenticatedRoute.addChildren({
+    AuthenticatedTodosRoute: AuthenticatedTodosRoute.addChildren({
+      AuthenticatedTodosCreateTodoModalRoute,
+    }),
     AuthenticatedIndexRoute,
-    AuthenticatedTodoIdRoute,
+    AuthenticatedTodosIdRoute,
+    AuthenticatedTodosCreateTodoRoute,
   }),
   LoginRoute,
 })
@@ -98,20 +143,37 @@ export const routeTree = rootRoute.addChildren({
     "/_authenticated": {
       "filePath": "_authenticated.tsx",
       "children": [
+        "/_authenticated/todos",
         "/_authenticated/",
-        "/_authenticated/todo/$id"
+        "/_authenticated/todos/$id",
+        "/_authenticated/todos/create-todo"
       ]
     },
     "/login": {
       "filePath": "login.tsx"
     },
+    "/_authenticated/todos": {
+      "filePath": "_authenticated/todos.tsx",
+      "parent": "/_authenticated",
+      "children": [
+        "/_authenticated/todos/create-todo/modal"
+      ]
+    },
     "/_authenticated/": {
       "filePath": "_authenticated/index.tsx",
       "parent": "/_authenticated"
     },
-    "/_authenticated/todo/$id": {
-      "filePath": "_authenticated/todo.$id.tsx",
+    "/_authenticated/todos/$id": {
+      "filePath": "_authenticated/todos_/$id.tsx",
       "parent": "/_authenticated"
+    },
+    "/_authenticated/todos/create-todo": {
+      "filePath": "_authenticated/todos_/create-todo.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/todos/create-todo/modal": {
+      "filePath": "_authenticated/todos.create-todo.modal.tsx",
+      "parent": "/_authenticated/todos"
     }
   }
 }

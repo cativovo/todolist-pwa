@@ -12,7 +12,7 @@ function findTodoByIdQueryOptions(id: string) {
   };
 }
 
-export const Route = createFileRoute("/_authenticated/todo/$id")({
+export const Route = createFileRoute("/_authenticated/todos/$id")({
   component: Todo,
   loader(match) {
     return match.context.queryClient.ensureQueryData(
