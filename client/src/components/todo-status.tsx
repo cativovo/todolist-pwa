@@ -19,7 +19,7 @@ function getDisplay(status: TodoStatusProps["status"]): {
     case StatusTodo.Todo: {
       return {
         icon: <Timer />,
-        label: "Todo",
+        label: "ToDo",
         color: "bg-[#85C1E9]",
       };
     }

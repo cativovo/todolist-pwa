@@ -1,6 +1,5 @@
 import {
   createTodo,
-  CreateTodoPayload,
   findTodoById,
   findTodos,
   FindTodosSearchParams,
@@ -8,7 +7,6 @@ import {
 import {
   keepPreviousData,
   useMutation,
-  useMutationState,
   useQuery,
   useQueryClient,
   useSuspenseQuery,
@@ -42,16 +40,6 @@ export function useCreateTodo() {
       });
     },
   });
-}
-
-export function useCreateTodoVariables() {
-  const variables = useMutationState({
-    filters: { mutationKey: createTodoKeys, status: "pending" },
-    select(mutation) {
-      return mutation.state.variables;
-    },
-  });
-  return variables[0] as CreateTodoPayload | undefined;
 }
 
 export function findTodoByIdQueryOptions(id: string) {
