@@ -1,6 +1,7 @@
 import {
   createTodo,
   CreateTodoPayload,
+  findTodoById,
   findTodos,
   FindTodosSearchParams,
 } from "@/api/todos";
@@ -10,6 +11,7 @@ import {
   useMutationState,
   useQuery,
   useQueryClient,
+  useSuspenseQuery,
 } from "@tanstack/react-query";
 
 const findTodosKeys = ["findTodos"];
@@ -50,4 +52,20 @@ export function useCreateTodoVariables() {
     },
   });
   return variables[0] as CreateTodoPayload | undefined;
+}
+
+export function findTodoByIdQueryOptions(id: string) {
+  return {
+    queryKey: ["findTodoById", id],
+    async queryFn() {
+      return await findTodoById(id);
+    },
+  };
+}
+
+export function useTodo(id: string) {
+  return useSuspenseQuery({
+    ...findTodoByIdQueryOptions(id),
+    refetchOnMount: false,
+  });
 }

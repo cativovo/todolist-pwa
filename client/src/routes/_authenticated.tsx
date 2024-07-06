@@ -1,6 +1,6 @@
 import { logout } from "@/api/auth";
 import { setUser } from "@/lib/user";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   Outlet,
   createFileRoute,
@@ -12,7 +12,6 @@ export const Route = createFileRoute("/_authenticated")({
   component: Authenticated,
   beforeLoad({ context }) {
     if (!context.user) {
-      context.queryClient.clear();
       throw redirect({
         to: "/login",
         replace: true,
@@ -22,26 +21,29 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function Authenticated() {
-  const queryClient = useQueryClient();
   const router = useRouter();
+  const context = Route.useRouteContext();
   const mutation = useMutation({
     mutationFn: logout,
     async onSettled() {
       setUser(null);
-      queryClient.clear();
       await router.invalidate();
+      context.queryClient.clear();
+      context.user = null;
     },
   });
-  const context = Route.useRouteContext();
-  const user = context.user!;
 
   function handleLogout() {
     mutation.mutate();
   }
 
+  if (!context.user) {
+    return <p>logging out...</p>;
+  }
+
   return (
     <>
-      <h1>{user.username}</h1>
+      <h1>{context.user.username}</h1>
       <button onClick={handleLogout}>logout</button>
       <Outlet />
     </>
