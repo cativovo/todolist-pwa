@@ -1,4 +1,3 @@
-import Pending from "@/components/pending";
 import { Todo } from "@/components/todo";
 import {
   Dialog,
@@ -12,14 +11,11 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/todos/$id/modal")({
   component: TodoModalRoute,
-  loader(match) {
-    return match.context.queryClient.ensureQueryData(
-      findTodoByIdQueryOptions(match.params.id),
+  loader({ context, params }) {
+    return context.queryClient.ensureQueryData(
+      findTodoByIdQueryOptions(params.id),
     );
   },
-  pendingComponent: () => (
-    <Pending className="bg-black text-white opacity-75" />
-  ),
 });
 
 function TodoModalRoute() {
@@ -44,4 +40,3 @@ function TodoModalRoute() {
     </Dialog>
   );
 }
-

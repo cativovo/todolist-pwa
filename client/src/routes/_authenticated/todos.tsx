@@ -15,8 +15,8 @@ function TodosRoute() {
       <div className="mx-auto flex max-w-xl flex-col gap-2">
         <h1>ToDo list</h1>
         <Link
-          to="/todos/create-todo/modal"
-          mask={{ to: "/todos/create-todo" }}
+          to="/todos/create/modal"
+          mask={{ to: "/todos/create" }}
           className="ml-auto text-primary underline-offset-4 hover:underline"
         >
           Create ToDo

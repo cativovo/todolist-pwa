@@ -1,4 +1,4 @@
-import CreateTodoForm from "@/components/create-todo-form";
+import { CreateTodoForm } from "@/components/forms";
 import {
   Dialog,
   DialogContent,
@@ -8,11 +8,9 @@ import {
 } from "@/components/ui/dialog";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_authenticated/todos/create-todo/modal")(
-  {
-    component: CreateTodoModalRoute,
-  },
-);
+export const Route = createFileRoute("/_authenticated/todos/create/modal")({
+  component: CreateTodoModalRoute,
+});
 
 function CreateTodoModalRoute() {
   const router = useRouter();

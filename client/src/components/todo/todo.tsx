@@ -1,4 +1,4 @@
-import { useTodo } from "@/hooks/todos";
+import { useFindTodoById } from "@/hooks/todos";
 import { formatDate } from "date-fns";
 import { TodoStatus } from "../status/todo-status";
 
@@ -9,7 +9,7 @@ type TodoProps = {
 const dateFormat = "PPpp";
 
 export function Todo(props: TodoProps) {
-  const { data } = useTodo(props.id);
+  const { data } = useFindTodoById(props.id);
 
   return (
     <div className="flex divide-x">

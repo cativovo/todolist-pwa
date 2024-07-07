@@ -4,19 +4,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { SyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "./ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
+import { Button } from "../ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
 
 type CreateTodoFormProps = {
   onSubmit?: () => void;
   onCancel?: () => void;
 };
 
-export default function CreateTodoForm(
-  props: CreateTodoFormProps,
-): JSX.Element {
+export function CreateTodoForm(props: CreateTodoFormProps) {
   const form = useForm<CreateTodoPayload>({
     resolver: zodResolver(CreateTodoPayload),
   });

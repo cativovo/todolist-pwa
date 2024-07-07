@@ -60,7 +60,7 @@ export function TodoStatus(props: TodoStatusProps) {
   return (
     <span
       className={cn(
-        "inline-flex gap-2 rounded-md px-2 py-1",
+        "inline-flex items-center gap-1 rounded-md px-2 py-1",
         color,
         props.className,
       )}

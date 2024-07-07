@@ -12,6 +12,7 @@ import {
   PaginationPrevious,
 } from "../ui/pagination";
 import { TodoListSkeleton } from "./list-skeleton";
+import { StatusTodo } from "@/schema/todo";
 
 export function ToDoList() {
   const searchParams = useSearch({ from: "/_authenticated/todos" });
@@ -50,7 +51,14 @@ export function ToDoList() {
                 search={searchParams}
               >
                 <div className="flex items-center gap-2 p-2 transition-colors hover:bg-gray-100">
-                  <span className="truncate">{todo.title}</span>
+                  <span
+                    className={cn(
+                      "truncate",
+                      todo.status === StatusTodo.Done && "line-through",
+                    )}
+                  >
+                    {todo.title}
+                  </span>
                   <TodoStatus status={todo.status} className="ml-auto" />
                 </div>
               </Link>

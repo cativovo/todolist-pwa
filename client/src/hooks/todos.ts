@@ -3,6 +3,7 @@ import {
   findTodoById,
   findTodos,
   FindTodosSearchParams,
+  updateTodo,
 } from "@/api/todos";
 import {
   keepPreviousData,
@@ -13,7 +14,8 @@ import {
 } from "@tanstack/react-query";
 
 const findTodosKeys = ["findTodos"];
-const createTodoKeys = ["addTodo"];
+const createTodoKeys = ["createTodo"];
+const updateTodoKeys = ["updateTodo"];
 
 export function findTodosQueryOptions(searchParams: FindTodosSearchParams) {
   return {
@@ -29,6 +31,19 @@ export function useFindTodos(searchParams: FindTodosSearchParams) {
   return useQuery(findTodosQueryOptions(searchParams));
 }
 
+export function findTodoByIdQueryOptions(id: string) {
+  return {
+    queryKey: ["findTodoById", id],
+    async queryFn() {
+      return await findTodoById(id);
+    },
+  };
+}
+
+export function useFindTodoById(id: string) {
+  return useSuspenseQuery(findTodoByIdQueryOptions(id));
+}
+
 export function useCreateTodo() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -42,18 +57,15 @@ export function useCreateTodo() {
   });
 }
 
-export function findTodoByIdQueryOptions(id: string) {
-  return {
-    queryKey: ["findTodoById", id],
-    async queryFn() {
-      return await findTodoById(id);
+export function useUpdateTodo() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: updateTodoKeys,
+    mutationFn: updateTodo,
+    async onSettled() {
+      return await queryClient.invalidateQueries({
+        queryKey: findTodosKeys,
+      });
     },
-  };
-}
-
-export function useTodo(id: string) {
-  return useSuspenseQuery({
-    ...findTodoByIdQueryOptions(id),
-    refetchOnMount: false,
   });
 }

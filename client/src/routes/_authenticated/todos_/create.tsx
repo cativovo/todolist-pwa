@@ -1,7 +1,7 @@
-import CreateTodoForm from "@/components/create-todo-form";
+import { CreateTodoForm } from "@/components/forms";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_authenticated/todos/create-todo")({
+export const Route = createFileRoute("/_authenticated/todos/create")({
   component: CreateTodoRoute,
 });
 
