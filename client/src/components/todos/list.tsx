@@ -2,7 +2,7 @@ import { useFindTodos } from "@/hooks/todos";
 import { cn } from "@/lib/utils";
 import { Link, useSearch } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
-import TodoStatus from "../todo-status";
+import { TodoStatus } from "../status/todo-status";
 import {
   Pagination,
   PaginationContent,
@@ -39,7 +39,16 @@ export function ToDoList() {
         <ul className="divide-y rounded-sm border">
           {data.todos.map((todo) => (
             <li key={todo.id}>
-              <Link to="/todos/$id" params={{ id: todo.id }}>
+              <Link
+                to="/todos/$id/modal"
+                mask={{
+                  to: "/todos/$id",
+                  params: { id: todo.id },
+                  search: searchParams,
+                }}
+                params={{ id: todo.id }}
+                search={searchParams}
+              >
                 <div className="flex items-center gap-2 p-2 transition-colors hover:bg-gray-100">
                   <span className="truncate">{todo.title}</span>
                   <TodoStatus status={todo.status} className="ml-auto" />

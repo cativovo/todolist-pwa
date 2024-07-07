@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_authenticated/todos")({
   component: TodosRoute,
 });
 
-function TodosRoute(): JSX.Element {
+function TodosRoute() {
   return (
     <>
       <div className="mx-auto flex max-w-xl flex-col gap-2">

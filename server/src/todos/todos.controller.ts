@@ -33,6 +33,9 @@ export class TodosController {
     @Req() req: FastifyRequest,
     @Body(new ZodValidationPipe(CreateTodoDto)) createTodoDto: CreateTodoDto,
   ) {
+    // TODO: check if pipes can do this
+    createTodoDto.title = createTodoDto.title.trim();
+    createTodoDto.description = createTodoDto.description.trim();
     return await this.todosService.create(req.user.id, createTodoDto);
   }
 

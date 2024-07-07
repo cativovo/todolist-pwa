@@ -54,15 +54,19 @@ function getDisplay(status: TodoStatusProps["status"]): {
   }
 }
 
-export default function TodoStatus(props: TodoStatusProps) {
+export function TodoStatus(props: TodoStatusProps) {
   const { icon, label, color } = getDisplay(props.status);
 
   return (
-    <div
-      className={cn("flex gap-2 rounded-md px-2 py-1", color, props.className)}
+    <span
+      className={cn(
+        "inline-flex gap-2 rounded-md px-2 py-1",
+        color,
+        props.className,
+      )}
     >
       {icon}
       {label}
-    </div>
+    </span>
   );
 }

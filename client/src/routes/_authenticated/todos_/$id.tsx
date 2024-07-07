@@ -1,40 +1,46 @@
-import { findTodoById } from "@/api/todos";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { formatDate } from "date-fns";
-
-function findTodoByIdQueryOptions(id: string) {
-  return {
-    queryKey: ["findTodoById", id],
-    queryFn() {
-      return findTodoById(id);
-    },
-  };
-}
+import { Todo } from "@/components/todo";
+import { TodoSkeleton } from "@/components/todo/todo-skeleton";
+import { buttonVariants } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { findTodoByIdQueryOptions } from "@/hooks/todos";
+import { cn } from "@/lib/utils";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/todos/$id")({
-  component: Todo,
+  component: TodoRoute,
   loader(match) {
     return match.context.queryClient.ensureQueryData(
       findTodoByIdQueryOptions(match.params.id),
     );
   },
-  pendingComponent: () => <p>wait lang po...</p>,
+  pendingComponent: PendingComponent,
 });
 
-function Todo(): JSX.Element {
+function TodoRoute() {
   const params = Route.useParams();
-  const query = useSuspenseQuery(findTodoByIdQueryOptions(params.id));
 
   return (
-    <div>
-      <button>
-        <Link to="/">Home</Link>
-      </button>
-      <h1>{query.data.title}</h1>
-      <p>{query.data.description}</p>
-      <p>created at: {formatDate(query.data.createdAt, "PPpp")}</p>
-      <p>updated at: {formatDate(query.data.updatedAt, "PPpp")}</p>
+    <div className="mt-6 px-4">
+      <Link
+        to="/"
+        className={cn(buttonVariants({ variant: "default" }), "ml-auto")}
+      >
+        Back
+      </Link>
+      <div className="mx-auto mt-4 max-w-5xl">
+        <Todo id={params.id} />
+      </div>
+    </div>
+  );
+}
+
+function PendingComponent() {
+  return (
+    <div className="mt-6 px-4">
+      <Skeleton className="ml-auto inline-block h-6 w-24 text-sm" />
+      <div className="mx-auto mt-4 max-w-5xl">
+        <TodoSkeleton />
+      </div>
     </div>
   );
 }

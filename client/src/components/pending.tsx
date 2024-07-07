@@ -1,8 +1,19 @@
+import { cn } from "@/lib/utils";
+import { ClassValue } from "clsx";
 import { Loader2 } from "lucide-react";
 
-export default function Pending() {
+export type PendingProps = {
+  className?: ClassValue;
+};
+
+export default function Pending(props: PendingProps) {
   return (
-    <div className="h-screen w-screen flex items-center justify-center">
+    <div
+      className={cn(
+        "fixed inset-0 flex items-center justify-center",
+        props.className,
+      )}
+    >
       <Loader2 className="animate-spin" />
     </div>
   );

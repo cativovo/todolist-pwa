@@ -17,7 +17,8 @@ import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index
 import { Route as AuthenticatedTodosImport } from './routes/_authenticated/todos'
 import { Route as AuthenticatedTodosCreateTodoImport } from './routes/_authenticated/todos_/create-todo'
 import { Route as AuthenticatedTodosIdImport } from './routes/_authenticated/todos_/$id'
-import { Route as AuthenticatedTodosCreateTodoModalImport } from './routes/_authenticated/todos.create-todo.modal'
+import { Route as AuthenticatedTodosCreateTodoModalImport } from './routes/_authenticated/todos/create-todo.modal'
+import { Route as AuthenticatedTodosIdModalImport } from './routes/_authenticated/todos/$id.modal'
 
 // Create/Update Routes
 
@@ -57,6 +58,11 @@ const AuthenticatedTodosCreateTodoModalRoute =
     path: '/create-todo/modal',
     getParentRoute: () => AuthenticatedTodosRoute,
   } as any)
+
+const AuthenticatedTodosIdModalRoute = AuthenticatedTodosIdModalImport.update({
+  path: '/$id/modal',
+  getParentRoute: () => AuthenticatedTodosRoute,
+} as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -104,6 +110,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTodosCreateTodoImport
       parentRoute: typeof AuthenticatedImport
     }
+    '/_authenticated/todos/$id/modal': {
+      id: '/_authenticated/todos/$id/modal'
+      path: '/$id/modal'
+      fullPath: '/todos/$id/modal'
+      preLoaderRoute: typeof AuthenticatedTodosIdModalImport
+      parentRoute: typeof AuthenticatedTodosImport
+    }
     '/_authenticated/todos/create-todo/modal': {
       id: '/_authenticated/todos/create-todo/modal'
       path: '/create-todo/modal'
@@ -119,6 +132,7 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   AuthenticatedRoute: AuthenticatedRoute.addChildren({
     AuthenticatedTodosRoute: AuthenticatedTodosRoute.addChildren({
+      AuthenticatedTodosIdModalRoute,
       AuthenticatedTodosCreateTodoModalRoute,
     }),
     AuthenticatedIndexRoute,
@@ -156,6 +170,7 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_authenticated/todos.tsx",
       "parent": "/_authenticated",
       "children": [
+        "/_authenticated/todos/$id/modal",
         "/_authenticated/todos/create-todo/modal"
       ]
     },
@@ -171,8 +186,12 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_authenticated/todos_/create-todo.tsx",
       "parent": "/_authenticated"
     },
+    "/_authenticated/todos/$id/modal": {
+      "filePath": "_authenticated/todos/$id.modal.tsx",
+      "parent": "/_authenticated/todos"
+    },
     "/_authenticated/todos/create-todo/modal": {
-      "filePath": "_authenticated/todos.create-todo.modal.tsx",
+      "filePath": "_authenticated/todos/create-todo.modal.tsx",
       "parent": "/_authenticated/todos"
     }
   }
