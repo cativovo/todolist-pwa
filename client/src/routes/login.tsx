@@ -1,4 +1,3 @@
-import { login } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,8 +14,8 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useLogin } from "@/hooks/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -45,19 +44,17 @@ type LoginFormSchema = z.infer<typeof LoginFormSchema>;
 
 function Login(): JSX.Element {
   const router = useRouter();
-  const mutation = useMutation({
-    mutationKey: ["login"],
-    mutationFn: login,
-    onSuccess() {
-      router.invalidate();
-    },
-  });
+  const mutation = useLogin();
   const form = useForm<LoginFormSchema>({
     resolver: zodResolver(LoginFormSchema),
   });
 
   function handleSubmit(values: LoginFormSchema) {
-    mutation.mutate(values);
+    mutation.mutate(values, {
+      onSuccess() {
+        router.invalidate();
+      },
+    });
   }
 
   const buttonsDisabled = mutation.isPending || mutation.isSuccess;
@@ -93,6 +90,11 @@ function Login(): JSX.Element {
                   </FormItem>
                 )}
               />
+              {mutation.error && (
+                <p className="text-center text-sm text-red-600">
+                  Invalid username/password
+                </p>
+              )}
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
               <Button type="submit" disabled={buttonsDisabled}>

@@ -1,4 +1,3 @@
-import { logout } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -6,8 +5,8 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useLogout } from "@/hooks/auth";
 import { setUser } from "@/lib/user";
-import { useMutation } from "@tanstack/react-query";
 import {
   Outlet,
   createFileRoute,
@@ -31,18 +30,17 @@ export const Route = createFileRoute("/_authenticated")({
 function Authenticated() {
   const router = useRouter();
   const context = Route.useRouteContext();
-  const mutation = useMutation({
-    mutationFn: logout,
-    async onSettled() {
-      setUser(null);
-      await router.invalidate();
-      context.queryClient.clear();
-      context.user = null;
-    },
-  });
+  const mutation = useLogout();
 
-  function handleLogout() {
-    mutation.mutate();
+  function logout() {
+    mutation.mutate(undefined, {
+      async onSettled() {
+        setUser(null);
+        await router.invalidate();
+        context.queryClient.clear();
+        context.user = null;
+      },
+    });
   }
 
   if (!context.user) {
@@ -62,7 +60,7 @@ function Authenticated() {
           <DropdownMenuContent className="w-56">
             <DropdownMenuCheckboxItem
               className="cursor-pointer"
-              onSelect={handleLogout}
+              onSelect={logout}
             >
               Logout
             </DropdownMenuCheckboxItem>
