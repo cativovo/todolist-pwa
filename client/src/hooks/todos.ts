@@ -3,6 +3,7 @@ import {
   findTodoById,
   findTodos,
   FindTodosSearchParams,
+  removeTodo,
   updateTodo,
   UpdateTodoPayload,
 } from "@/api/todos";
@@ -17,6 +18,7 @@ import {
 const findTodosKeys = ["findTodos"];
 const createTodoKeys = ["createTodo"];
 const updateTodoKeys = ["updateTodo"];
+const removeTodoKeys = ["removeTodo"];
 
 export function findTodosQueryOptions(searchParams: FindTodosSearchParams) {
   return {
@@ -67,6 +69,21 @@ export function useUpdateTodo(id: string) {
     },
     async onSettled() {
       return await queryClient.invalidateQueries({
+        queryKey: findTodosKeys,
+      });
+    },
+  });
+}
+
+export function useRemoveTodo(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: removeTodoKeys,
+    async mutationFn() {
+      return await removeTodo(id);
+    },
+    onSettled() {
+      queryClient.invalidateQueries({
         queryKey: findTodosKeys,
       });
     },

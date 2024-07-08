@@ -37,3 +37,7 @@ export async function updateTodo(
 ): Promise<Todo> {
   return await api.patch(`${ApiPath.Todos}/${id}`, { json: payload }).json();
 }
+
+export async function removeTodo(id: string): Promise<void> {
+  await api.delete(`${ApiPath.Todos}/${id}`);
+}
