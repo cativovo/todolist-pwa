@@ -1,6 +1,7 @@
 import { createRouter } from "@tanstack/react-router";
 import Pending from "./components/pending";
 import { routeTree } from "./routeTree.gen";
+import nProgress from "nprogress";
 
 export const router = createRouter({
   routeTree,
@@ -16,3 +17,15 @@ declare module "@tanstack/react-router" {
     router: typeof router;
   }
 }
+
+nProgress.configure({
+  showSpinner: false,
+});
+
+router.subscribe("onBeforeLoad", () => {
+  nProgress.start();
+});
+
+router.subscribe("onResolved", () => {
+  nProgress.done();
+});
