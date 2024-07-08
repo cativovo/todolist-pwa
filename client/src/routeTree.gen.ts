@@ -11,6 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SignupImport } from './routes/signup'
 import { Route as LoginImport } from './routes/login'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index'
@@ -22,6 +23,11 @@ import { Route as AuthenticatedTodosCreateModalImport } from './routes/_authenti
 import { Route as AuthenticatedTodosIdModalImport } from './routes/_authenticated/todos/$id.modal'
 
 // Create/Update Routes
+
+const SignupRoute = SignupImport.update({
+  path: '/signup',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const LoginRoute = LoginImport.update({
   path: '/login',
@@ -87,6 +93,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupImport
       parentRoute: typeof rootRoute
     }
     '/_authenticated/todos': {
@@ -155,6 +168,7 @@ export const routeTree = rootRoute.addChildren({
     AuthenticatedTodosUpdateIdRoute,
   }),
   LoginRoute,
+  SignupRoute,
 })
 
 /* prettier-ignore-end */
@@ -166,7 +180,8 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/_authenticated",
-        "/login"
+        "/login",
+        "/signup"
       ]
     },
     "/_authenticated": {
@@ -181,6 +196,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/signup": {
+      "filePath": "signup.tsx"
     },
     "/_authenticated/todos": {
       "filePath": "_authenticated/todos.tsx",

@@ -18,10 +18,23 @@ import sleep from 'src/sleep';
 import { UserWithoutPassword } from 'src/users/schemas/user';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { SignUpDto } from './dto/signup.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
+
+  @Post('/signup')
+  async signup(
+    @Body(new ZodValidationPipe(SignUpDto)) body: SignUpDto,
+    @Session() session: FastifySession,
+  ): Promise<UserWithoutPassword> {
+    const user = await this.authService.signup(body.username, body.password);
+
+    session.set('user', user);
+
+    return user;
+  }
 
   @Post('/login')
   async login(

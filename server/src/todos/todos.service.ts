@@ -49,7 +49,7 @@ export class TodosService {
 
     return {
       todos,
-      count: this.todos.length,
+      count: todos.length,
     };
   }
 

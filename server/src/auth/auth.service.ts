@@ -20,4 +20,15 @@ export class AuthService {
 
     return user;
   }
+
+  async signup(
+    username: string,
+    password: string,
+  ): Promise<UserWithoutPassword> {
+    const user = await this.userService.addUser(username, password);
+
+    delete (user as Partial<User>).password;
+
+    return user;
+  }
 }

@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -13,10 +13,16 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input, InputPassword } from "@/components/ui/input";
 import { useLogin } from "@/hooks/auth";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useRouter,
+} from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -85,7 +91,7 @@ function Login(): JSX.Element {
                   <FormItem>
                     <FormLabel>Password:</FormLabel>
                     <FormControl>
-                      <Input {...field} type="password" />
+                      <InputPassword {...field} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -103,10 +109,13 @@ function Login(): JSX.Element {
                 )}
                 Login
               </Button>
-              {/* TODO: redirect to signup page */}
-              <Button type="button" disabled={buttonsDisabled}>
+              <Link
+                to="/signup"
+                className={cn(buttonVariants({ variant: "link" }))}
+                disabled={buttonsDisabled}
+              >
                 Sign up
-              </Button>
+              </Link>
             </CardFooter>
           </form>
         </Form>

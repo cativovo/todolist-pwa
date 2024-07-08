@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { nanoid } from 'nanoid';
 import sleep from 'src/sleep';
 import { User } from './schemas/user';
 
@@ -24,6 +25,18 @@ export class UsersService {
     if (!user) {
       return undefined;
     }
+
+    return { ...user };
+  }
+
+  async addUser(username: string, password: string): Promise<User> {
+    await sleep();
+    const user = {
+      id: nanoid(),
+      username,
+      password,
+    };
+    this.users.push(user);
 
     return { ...user };
   }
