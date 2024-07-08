@@ -1,4 +1,4 @@
-import { useRemoveTodo } from "@/hooks/todos";
+import { useRemoveTodo, useUpdateTodo } from "@/hooks/todos";
 import { cn } from "@/lib/utils";
 import { StatusTodo, Todo } from "@/schema/todo";
 import { DialogDescription, DialogTrigger } from "@radix-ui/react-dialog";
@@ -22,6 +22,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 type TodoItemProps = {
   todo: Todo;
@@ -32,7 +39,8 @@ type TodoItemProps = {
 
 export function TodoItem({ todo, search }: TodoItemProps) {
   const navigate = useNavigate();
-  const mutation = useRemoveTodo(todo.id);
+  const removeMutation = useRemoveTodo(todo.id);
+  const updateMutation = useUpdateTodo(todo.id);
   const [open, setOpen] = useState(false);
 
   function update() {
@@ -46,11 +54,17 @@ export function TodoItem({ todo, search }: TodoItemProps) {
   }
 
   async function remove() {
-    await mutation.mutateAsync();
+    await removeMutation.mutateAsync();
     setOpen(false);
   }
 
-  const disabled = mutation.isPending || mutation.isSuccess;
+  function updateStatus(status: StatusTodo) {
+    updateMutation.mutate({ status });
+  }
+
+  const disabled = removeMutation.isPending || removeMutation.isSuccess;
+  const addLineThrough =
+    todo.status === StatusTodo.Done || todo.status === StatusTodo.Cancelled;
 
   return (
     <li
@@ -68,13 +82,24 @@ export function TodoItem({ todo, search }: TodoItemProps) {
         search={search}
         className={cn(
           "flex-1 truncate py-2 pl-2",
-          todo.status === StatusTodo.Done && "line-through",
+          addLineThrough && "line-through",
         )}
       >
         {todo.title}
       </Link>
       <div className="flex items-center px-2">
-        <TodoStatus status={todo.status} className="ml-auto" />
+        <Select defaultValue={todo.status} onValueChange={updateStatus}>
+          <SelectTrigger className="p-1">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.values(StatusTodo).map((status) => (
+              <SelectItem key={status} value={status}>
+                <TodoStatus status={status} />
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Dialog onOpenChange={setOpen} open={open}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
