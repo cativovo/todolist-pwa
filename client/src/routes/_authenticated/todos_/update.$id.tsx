@@ -15,8 +15,16 @@ function UpdateTodoRoute(): JSX.Element {
   const navigate = useNavigate();
   const params = Route.useParams();
   const query = useFindTodoById(params.id);
+  const search = Route.useSearch();
 
   function back() {
+    navigate({
+      to: "/todos",
+      search,
+    });
+  }
+
+  function handleSubmit() {
     navigate({
       to: "/todos",
     });
@@ -28,7 +36,7 @@ function UpdateTodoRoute(): JSX.Element {
         Update ToDo
       </h1>
       <UpdateTodoForm
-        onSubmit={back}
+        onSubmit={handleSubmit}
         onCancel={back}
         defaultValues={query.data}
       />

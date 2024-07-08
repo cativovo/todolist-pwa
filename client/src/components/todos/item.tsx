@@ -41,6 +41,7 @@ export function TodoItem({ todo, search }: TodoItemProps) {
       params: {
         id: todo.id,
       },
+      search,
     });
   }
 
