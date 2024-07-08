@@ -1,8 +1,6 @@
 import { useFindTodos } from "@/hooks/todos";
 import { cn } from "@/lib/utils";
-import { Link, useSearch } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
-import { TodoStatus } from "../status/todo-status";
 import {
   Pagination,
   PaginationContent,
@@ -11,13 +9,14 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "../ui/pagination";
+import { TodoItem } from "./item";
 import { TodoListSkeleton } from "./list-skeleton";
-import { StatusTodo } from "@/schema/todo";
+import { useSearch } from "@tanstack/react-router";
 
 export function ToDoList() {
-  const searchParams = useSearch({ from: "/_authenticated/todos" });
-  const { data, isRefetching, error } = useFindTodos(searchParams);
-  const { page = 1 } = searchParams;
+  const search = useSearch({ from: "/_authenticated/todos" });
+  const { data, isRefetching, error } = useFindTodos(search);
+  const { page = 1 } = search;
 
   if (error) {
     return <p>ooops something went wrong</p>;
@@ -39,30 +38,7 @@ export function ToDoList() {
         )}
         <ul className="divide-y rounded-sm border">
           {data.todos.map((todo) => (
-            <li key={todo.id}>
-              <Link
-                to="/todos/$id/modal"
-                mask={{
-                  to: "/todos/$id",
-                  params: { id: todo.id },
-                  search: searchParams,
-                }}
-                params={{ id: todo.id }}
-                search={searchParams}
-              >
-                <div className="flex items-center gap-2 p-2 transition-colors hover:bg-gray-100">
-                  <span
-                    className={cn(
-                      "truncate",
-                      todo.status === StatusTodo.Done && "line-through",
-                    )}
-                  >
-                    {todo.title}
-                  </span>
-                  <TodoStatus status={todo.status} className="ml-auto" />
-                </div>
-              </Link>
-            </li>
+            <TodoItem search={search} todo={todo} key={todo.id} />
           ))}
         </ul>
       </div>
