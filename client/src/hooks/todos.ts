@@ -14,6 +14,7 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const findTodosKeys = ["findTodos"];
 const createTodoKeys = ["createTodo"];
@@ -52,6 +53,9 @@ export function useCreateTodo() {
   return useMutation({
     mutationKey: createTodoKeys,
     mutationFn: createTodo,
+    onSuccess() {
+      toast.success("Todo Added!");
+    },
     async onSettled() {
       return await queryClient.invalidateQueries({
         queryKey: findTodosKeys,
@@ -67,6 +71,9 @@ export function useUpdateTodo(id: string) {
     async mutationFn(payload: UpdateTodoPayload) {
       return await updateTodo(id, payload);
     },
+    onSuccess() {
+      toast.success("Todo Updated!");
+    },
     async onSettled() {
       return await queryClient.invalidateQueries({
         queryKey: findTodosKeys,
@@ -81,6 +88,9 @@ export function useRemoveTodo(id: string) {
     mutationKey: removeTodoKeys,
     async mutationFn() {
       return await removeTodo(id);
+    },
+    onSuccess() {
+      toast.success("Todo Removed!");
     },
     onSettled() {
       queryClient.invalidateQueries({

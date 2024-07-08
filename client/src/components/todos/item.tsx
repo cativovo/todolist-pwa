@@ -53,9 +53,12 @@ export function TodoItem({ todo, search }: TodoItemProps) {
     });
   }
 
-  async function remove() {
-    await removeMutation.mutateAsync();
-    setOpen(false);
+  function remove() {
+    removeMutation.mutate(undefined, {
+      onSettled() {
+        setOpen(false);
+      },
+    });
   }
 
   function updateStatus(status: StatusTodo) {

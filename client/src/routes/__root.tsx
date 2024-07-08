@@ -1,5 +1,6 @@
 import { me } from "@/api/auth";
 import PWABadge from "@/components/PWABadge";
+import { Toaster } from "@/components/ui/sonner";
 import "@/index.css";
 import { getUser, setUser } from "@/lib/user";
 import { User } from "@/schema/user";
@@ -41,6 +42,7 @@ function Root(): JSX.Element {
   return (
     <>
       <Outlet />
+      <Toaster richColors />
       <PWABadge />
       <TanStackRouterDevtools />
       <ReactQueryDevtools />

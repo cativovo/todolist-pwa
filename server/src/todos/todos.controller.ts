@@ -86,6 +86,6 @@ export class TodosController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   async remove(@Req() req: FastifyRequest, @Param('id') id: string) {
-    return await this.todosService.remove(id);
+    await this.todosService.remove(id);
   }
 }
