@@ -13,7 +13,7 @@ function TodosRoute() {
   return (
     <>
       <div className="mx-auto flex max-w-xl flex-col gap-2">
-        <h1>ToDo list</h1>
+        <h1 className="text-center text-2xl">ToDo list</h1>
         <Link
           to="/todos/create/modal"
           mask={{ to: "/todos/create" }}
