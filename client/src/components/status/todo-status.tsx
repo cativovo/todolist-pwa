@@ -15,31 +15,33 @@ function getDisplay(status: TodoStatusProps["status"]): {
   label: string;
   color: string;
 } {
+  const iconClassName = "h-4 w-4";
+
   switch (status) {
     case StatusTodo.Todo: {
       return {
-        icon: <Timer />,
+        icon: <Timer className={iconClassName} />,
         label: "ToDo",
         color: "bg-[#85C1E9]",
       };
     }
     case StatusTodo.InProgress: {
       return {
-        icon: <Circle />,
+        icon: <Circle className={iconClassName} />,
         label: "In Progress",
         color: "bg-[#F8C471]",
       };
     }
     case StatusTodo.Done: {
       return {
-        icon: <CircleCheckBig />,
+        icon: <CircleCheckBig className={iconClassName} />,
         label: "Done",
         color: "bg-[#82E0AA]",
       };
     }
     case StatusTodo.Cancelled: {
       return {
-        icon: <CircleSlash2 />,
+        icon: <CircleSlash2 className={iconClassName} />,
         label: "Cancelled",
         color: "bg-[#F5B7B1]",
       };
@@ -60,7 +62,7 @@ export function TodoStatus(props: TodoStatusProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-md px-2 py-1",
+        "inline-flex items-center gap-1 rounded-md p-1",
         color,
         props.className,
       )}
