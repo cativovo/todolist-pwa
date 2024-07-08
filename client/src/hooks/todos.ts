@@ -4,6 +4,7 @@ import {
   findTodos,
   FindTodosSearchParams,
   updateTodo,
+  UpdateTodoPayload,
 } from "@/api/todos";
 import {
   keepPreviousData,
@@ -57,11 +58,13 @@ export function useCreateTodo() {
   });
 }
 
-export function useUpdateTodo() {
+export function useUpdateTodo(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: updateTodoKeys,
-    mutationFn: updateTodo,
+    async mutationFn(payload: UpdateTodoPayload) {
+      return await updateTodo(id, payload);
+    },
     async onSettled() {
       return await queryClient.invalidateQueries({
         queryKey: findTodosKeys,

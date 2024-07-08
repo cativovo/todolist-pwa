@@ -29,12 +29,11 @@ export const UpdateTodoPayload = Todo.pick({
   title: true,
   description: true,
   status: true,
-})
-  .partial()
-  .extend({ id: z.string() });
+}).partial();
 export type UpdateTodoPayload = z.infer<typeof UpdateTodoPayload>;
-export async function updateTodo(payload: UpdateTodoPayload): Promise<Todo> {
-  return await api
-    .patch(`${ApiPath.Todos}/${payload.id}`, { json: payload })
-    .json();
+export async function updateTodo(
+  id: string,
+  payload: UpdateTodoPayload,
+): Promise<Todo> {
+  return await api.patch(`${ApiPath.Todos}/${id}`, { json: payload }).json();
 }

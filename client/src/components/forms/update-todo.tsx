@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { TodoStatus } from "../status";
 import { Button } from "../ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
@@ -19,24 +18,21 @@ import {
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 
-const UpdateTodoFormSchema = UpdateTodoPayload.omit({ id: true });
-type UpdateTodoFormSchema = z.infer<typeof UpdateTodoFormSchema>;
-
 type UpdateTodoFormProps = {
   onSubmit?: () => void;
   onCancel?: () => void;
-  defaultValues?: Required<UpdateTodoFormSchema>;
+  defaultValues?: Required<UpdateTodoPayload>;
 };
 
 export function UpdateTodoForm(props: UpdateTodoFormProps) {
-  const form = useForm<UpdateTodoFormSchema>({
-    resolver: zodResolver(UpdateTodoFormSchema),
+  const form = useForm<UpdateTodoPayload>({
+    resolver: zodResolver(UpdateTodoPayload),
   });
-  const mutation = useUpdateTodo();
   const params = useParams({ from: "/_authenticated/todos/update/$id" });
+  const mutation = useUpdateTodo(params.id);
 
-  async function handleSubmit(payload: UpdateTodoFormSchema): Promise<void> {
-    mutation.mutate({ ...payload, id: params.id });
+  async function handleSubmit(payload: UpdateTodoPayload): Promise<void> {
+    mutation.mutate(payload);
     props.onSubmit?.();
   }
 
