@@ -28,6 +28,10 @@ export function ToDoList() {
 
   const { startPage, endPage, pages } = getPages(page, data.pages);
 
+  if (data.todos.length === 0) {
+    return <div>No ToDos found.</div>;
+  }
+
   return (
     <>
       <div className="relative">

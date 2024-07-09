@@ -1,11 +1,18 @@
 import { Module } from '@nestjs/common';
-import { TodosModule } from './todos/todos.module';
 import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { DrizzleModule } from './drizzle/drizzle.module';
+import { TodosModule } from './todos/todos.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [TodosModule, ConfigModule.forRoot(), UsersModule, AuthModule],
+  imports: [
+    TodosModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    UsersModule,
+    AuthModule,
+    DrizzleModule,
+  ],
   controllers: [],
   providers: [],
 })

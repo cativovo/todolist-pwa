@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { User, UserWithoutPassword } from 'src/users/schemas/user';
+import * as bcrypt from 'bcrypt';
+import { User, UserWithoutPassword } from 'src/drizzle/schema';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -12,7 +13,13 @@ export class AuthService {
   ): Promise<UserWithoutPassword | null> {
     const user = await this.userService.findUserByUsername(username);
 
-    if (user?.password !== password) {
+    if (!user) {
+      return null;
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
       return null;
     }
 

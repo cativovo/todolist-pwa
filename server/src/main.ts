@@ -7,7 +7,7 @@ import {
 } from '@nestjs/platform-fastify';
 import fastify from 'fastify';
 import { AppModule } from './app.module';
-import { UserWithoutPassword } from './users/schemas/user';
+import { UserWithoutPassword } from './drizzle/schema';
 
 declare module '@fastify/secure-session' {
   interface SessionData {

@@ -12,10 +12,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
+import { UserWithoutPassword } from 'src/drizzle/schema';
 import { AuthGuard } from 'src/guards';
 import { ZodValidationPipe } from 'src/pipes';
 import sleep from 'src/sleep';
-import { UserWithoutPassword } from 'src/users/schemas/user';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/signup.dto';

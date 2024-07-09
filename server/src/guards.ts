@@ -7,6 +7,7 @@ import {
 import { FastifyRequest } from 'fastify';
 import { Observable } from 'rxjs';
 
+// TODO: icheck kung valid yung user
 @Injectable()
 export class AuthGuard implements CanActivate {
   canActivate(

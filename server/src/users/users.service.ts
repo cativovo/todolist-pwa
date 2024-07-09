@@ -1,43 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { nanoid } from 'nanoid';
-import sleep from 'src/sleep';
-import { User } from './schemas/user';
+import * as bcrypt from 'bcrypt';
+import { eq } from 'drizzle-orm';
+import { DrizzleService } from 'src/drizzle/drizzle.service';
+import { User, UserWithoutPassword, users } from 'src/drizzle/schema';
 
 @Injectable()
 export class UsersService {
-  private users: User[] = [
-    {
-      id: '1',
-      username: 'user1',
-      password: 'user1',
-    },
-    {
-      id: '2',
-      username: 'user2',
-      password: 'user2',
-    },
-  ];
+  constructor(private readonly drizzleService: DrizzleService) {}
 
   async findUserByUsername(username: string): Promise<User | undefined> {
-    await sleep();
-    const user = this.users.find((v) => v.username === username);
+    const result = await this.drizzleService.db
+      .select()
+      .from(users)
+      .where(eq(users.username, username));
 
-    if (!user) {
-      return undefined;
-    }
-
-    return { ...user };
+    return result[0];
   }
 
-  async addUser(username: string, password: string): Promise<User> {
-    await sleep();
-    const user = {
-      id: nanoid(),
-      username,
-      password,
-    };
-    this.users.push(user);
+  async addUser(
+    username: string,
+    password: string,
+  ): Promise<UserWithoutPassword> {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const result = await this.drizzleService.db
+      .insert(users)
+      .values({ username, password: hashedPassword })
+      .returning({
+        id: users.id,
+        username: users.username,
+      });
 
-    return { ...user };
+    return result[0];
   }
 }
