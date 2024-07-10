@@ -1,5 +1,6 @@
 import { Session as FastifySession } from '@fastify/secure-session';
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -12,6 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
+import { PostgresError } from 'postgres';
 import { UserWithoutPassword } from 'src/drizzle/schema';
 import { AuthGuard } from 'src/guards';
 import { ZodValidationPipe } from 'src/pipes';
@@ -29,11 +31,22 @@ export class AuthController {
     @Body(new ZodValidationPipe(SignUpDto)) body: SignUpDto,
     @Session() session: FastifySession,
   ): Promise<UserWithoutPassword> {
-    const user = await this.authService.signup(body.username, body.password);
+    try {
+      const user = await this.authService.signup(body.username, body.password);
 
-    session.set('user', user);
+      session.set('user', user);
 
-    return user;
+      return user;
+    } catch (err) {
+      if (
+        err instanceof PostgresError &&
+        err.constraint_name === 'users_username_unique'
+      ) {
+        throw new BadRequestException('Username already used!');
+      }
+
+      throw err;
+    }
   }
 
   @Post('/login')
