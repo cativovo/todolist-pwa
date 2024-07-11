@@ -15,6 +15,13 @@
       "when": 1720536353758,
       "tag": "0001_next_frog_thor",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1720698719262,
+      "tag": "0002_windy_susan_delgado",
+      "breakpoints": true
     }
   ]
 }

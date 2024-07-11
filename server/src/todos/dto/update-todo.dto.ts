@@ -1,5 +1,5 @@
+import { Todo } from 'src/drizzle/schema';
 import { z } from 'zod';
-import { Todo } from '../schemas/todo';
 
 export const UpdateTodoDto = Todo.pick({
   title: true,

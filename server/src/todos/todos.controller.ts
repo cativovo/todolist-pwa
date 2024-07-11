@@ -24,9 +24,7 @@ import { TodosService } from './todos.service';
 @UseGuards(AuthGuard)
 @Controller('todos')
 export class TodosController {
-  constructor(private readonly todosService: TodosService) {
-    todosService.seed(101);
-  }
+  constructor(private readonly todosService: TodosService) {}
 
   @Post()
   async create(
@@ -53,7 +51,7 @@ export class TodosController {
 
     return {
       todos: result.todos,
-      pages: Math.ceil(result.count / limit),
+      pages: Math.ceil(result.total / limit),
     };
   }
 
@@ -74,7 +72,7 @@ export class TodosController {
     @Param('id') id: string,
     @Body(new ZodValidationPipe(UpdateTodoDto)) updateTodoDto: UpdateTodoDto,
   ) {
-    const todo = await this.todosService.update(id, updateTodoDto);
+    const todo = await this.todosService.update(req.user.id, id, updateTodoDto);
 
     if (!todo) {
       throw new NotFoundException('Todo not found');
@@ -86,6 +84,6 @@ export class TodosController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   async remove(@Req() req: FastifyRequest, @Param('id') id: string) {
-    await this.todosService.remove(id);
+    await this.todosService.remove(req.user.id, id);
   }
 }

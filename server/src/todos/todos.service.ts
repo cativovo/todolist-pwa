@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { getUnixTime } from 'date-fns';
-import { nanoid } from 'nanoid';
-import sleep from 'src/sleep';
+import { and, eq, sql } from 'drizzle-orm';
+import { DrizzleService } from 'src/drizzle/drizzle.service';
+import { Todo, todos } from 'src/drizzle/schema';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { Todo, StatusTodo } from './schemas/todo';
 
 type FindAllOptions = {
   limit: number;
@@ -12,91 +11,94 @@ type FindAllOptions = {
 };
 
 type FindAllResult = {
+  total: number;
   todos: Pick<Todo, 'id' | 'title' | 'status'>[];
-  count: number;
-};
+}[];
 
 @Injectable()
 export class TodosService {
-  private todos: Todo[] = [];
+  constructor(private readonly drizzleService: DrizzleService) {}
 
   async create(userId: string, createTodoDto: CreateTodoDto): Promise<Todo> {
-    await sleep();
-    const now = getUnixTime(new Date());
-    const todo: Todo = {
-      ...createTodoDto,
-      id: nanoid(),
-      updatedAt: now,
-      createdAt: now,
-      userId,
-      status: StatusTodo.Todo,
-    };
-    this.todos.push(todo);
+    const result = await this.drizzleService.db
+      .insert(todos)
+      .values({
+        ...createTodoDto,
+        userId,
+      })
+      .returning();
 
-    return todo;
+    return result[0];
   }
 
-  async findAll(
-    userId: string,
-    options: FindAllOptions,
-  ): Promise<FindAllResult> {
-    await sleep();
-    const todos = this.todos
-      .filter((todo) => todo.userId === userId)
-      .sort((a, b) => b.updatedAt - a.updatedAt)
-      .slice(options.offset, options.limit + options.offset)
-      .map(({ id, title, status }) => ({ id, title, status }));
+  async findAll(userId: string, options: FindAllOptions) {
+    const result: FindAllResult = await this.drizzleService.db.execute(
+      sql`
+				SELECT (
+						SELECT
+							COUNT(id)
+						FROM 
+							${todos} 
+						WHERE ${todos.userId} = ${userId}
+					) AS total,
+					(
+						SELECT 
+							JSON_AGG(rows.*) 
+						FROM (
+							SELECT 
+								${todos.id}, ${todos.title}, ${todos.status}
+							FROM 
+								todos 
+							WHERE ${todos.userId} = ${userId} 
+							ORDER BY ${todos.updatedAt} DESC
+							OFFSET ${options.offset}
+							LIMIT ${options.limit}
+						) AS ROWS
+					) AS TODOS`,
+    );
+
+    const v = result[0];
 
     return {
-      todos,
-      count: todos.length,
+      todos: v?.todos ?? [],
+      total: v?.total ?? 0,
     };
   }
 
   async findOne(userId: string, id: string): Promise<Todo | null> {
-    await sleep();
-    const todo = this.todos.find((v) => v.id === id && v.userId === userId);
-    console.log(todo, userId, id);
+    const result = await this.drizzleService.db
+      .select()
+      .from(todos)
+      .where(sql`${todos.userId} = ${userId} and ${todos.id} = ${id}`);
+
+    const todo = result[0];
 
     if (!todo) {
       return null;
     }
 
-    return { ...todo };
-  }
-
-  async update(id: string, updateTodoDto: UpdateTodoDto): Promise<Todo | null> {
-    await sleep();
-    const index = this.todos.findIndex((v) => v.id === id);
-
-    if (index < 0) {
-      return null;
-    }
-
-    const todo = {
-      ...this.todos[index],
-      ...updateTodoDto,
-      updatedAt: getUnixTime(new Date()),
-    };
-    this.todos[index] = todo;
-
     return todo;
   }
 
-  async remove(id: string): Promise<void> {
-    await sleep();
-    this.todos = this.todos.filter((v) => v.id !== id);
+  async update(
+    userId: string,
+    id: string,
+    updateTodoDto: UpdateTodoDto,
+  ): Promise<Todo | null> {
+    const result = await this.drizzleService.db
+      .update(todos)
+      .set({
+        ...updateTodoDto,
+      })
+      .where(and(eq(todos.userId, userId), eq(todos.id, id)))
+      .returning();
+
+    return result[0] ?? null;
   }
 
-  async seed(count: number) {
-    const promises = Array.from({ length: count }, async (_, i) => {
-      const num = i + 1;
-      this.create('1', {
-        title: 'title' + num,
-        description: 'description' + num,
-      });
-    });
-
-    await Promise.all(promises);
+  async remove(userId: string, id: string): Promise<void> {
+    await this.drizzleService.db
+      .delete(todos)
+      .where(and(eq(todos.userId, userId), eq(todos.id, id)));
   }
 }
