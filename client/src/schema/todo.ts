@@ -13,7 +13,7 @@ export const Todo = z.object({
   title: z.string(),
   description: z.string(),
   status: z.nativeEnum(StatusTodo),
-  createdAt: z.number(),
-  updatedAt: z.number(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 export type Todo = z.infer<typeof Todo>;
