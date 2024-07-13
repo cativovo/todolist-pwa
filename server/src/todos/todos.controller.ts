@@ -12,16 +12,13 @@ import {
   Post,
   Query,
   Req,
-  UseGuards,
 } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
-import { AuthGuard } from 'src/guards';
 import { ZodValidationPipe } from 'src/pipes';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodosService } from './todos.service';
 
-@UseGuards(AuthGuard)
 @Controller('todos')
 export class TodosController {
   constructor(private readonly todosService: TodosService) {}

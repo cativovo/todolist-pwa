@@ -8,13 +8,22 @@ import { User, UserWithoutPassword, users } from 'src/drizzle/schema';
 export class UsersService {
   constructor(private readonly drizzleService: DrizzleService) {}
 
-  async findUserByUsername(username: string): Promise<User | undefined> {
+  async findUserByUsername(username: string): Promise<User | null> {
     const result = await this.drizzleService.db
       .select()
       .from(users)
       .where(eq(users.username, username));
 
-    return result[0];
+    return result[0] ?? null;
+  }
+
+  async findUserById(id: string): Promise<UserWithoutPassword | null> {
+    const result = await this.drizzleService.db
+      .select({ id: users.id, username: users.username })
+      .from(users)
+      .where(eq(users.id, id));
+
+    return result[0] ?? null;
   }
 
   async addUser(

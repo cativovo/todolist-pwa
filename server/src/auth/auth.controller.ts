@@ -6,19 +6,18 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Logger,
   Post,
   Req,
   Session,
   UnauthorizedException,
-  UseGuards,
 } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
 import { PostgresError } from 'postgres';
 import { UserWithoutPassword } from 'src/drizzle/schema';
-import { AuthGuard } from 'src/guards';
 import { ZodValidationPipe } from 'src/pipes';
-import sleep from 'src/sleep';
 import { AuthService } from './auth.service';
+import { Public } from './decorators/public.decorator';
 import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/signup.dto';
 
@@ -26,6 +25,7 @@ import { SignUpDto } from './dto/signup.dto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Public()
   @Post('/signup')
   async signup(
     @Body(new ZodValidationPipe(SignUpDto)) body: SignUpDto,
@@ -45,10 +45,12 @@ export class AuthController {
         throw new BadRequestException('Username already used!');
       }
 
+      Logger.error(err);
       throw err;
     }
   }
 
+  @Public()
   @Post('/login')
   async login(
     @Body(new ZodValidationPipe(LoginDto)) body: LoginDto,
@@ -65,23 +67,18 @@ export class AuthController {
     return user;
   }
 
-  @UseGuards(AuthGuard)
   @Get('/me')
   async me(
     @Session() session: FastifySession,
     @Req() req: FastifyRequest,
   ): Promise<UserWithoutPassword> {
-    await sleep();
     session.touch();
-
     return req.user;
   }
 
-  @UseGuards(AuthGuard)
   @Post('/logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@Session() session: FastifySession): Promise<void> {
-    await sleep();
     session.delete();
   }
 }
