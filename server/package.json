@@ -29,7 +29,6 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-fastify": "^10.3.9",
     "bcrypt": "^5.1.1",
-    "date-fns": "^3.6.0",
     "drizzle-orm": "^0.31.4",
     "drizzle-zod": "^0.5.1",
     "nanoid": "^3.3.7",
