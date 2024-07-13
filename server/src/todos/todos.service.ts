@@ -89,6 +89,7 @@ export class TodosService {
       .update(todos)
       .set({
         ...updateTodoDto,
+        updatedAt: new Date(),
       })
       .where(and(eq(todos.userId, userId), eq(todos.id, id)))
       .returning();
