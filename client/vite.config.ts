@@ -6,10 +6,12 @@ import path from "path";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
+const isTest = process.env.NODE_ENV === "test";
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    TanStackRouterVite(),
+    !isTest && TanStackRouterVite(),
     react(),
     VitePWA({
       registerType: "prompt",
