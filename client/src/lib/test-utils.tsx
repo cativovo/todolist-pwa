@@ -6,6 +6,7 @@ import {
   createRoute,
   createRouter,
   Outlet,
+  RouteOptions as TanstackRouteOptions,
   RouterProvider,
 } from "@tanstack/react-router";
 import { act, render, RenderOptions } from "@testing-library/react";
@@ -14,18 +15,23 @@ import { FC, ReactNode } from "react";
 function AllProviders({ children }: { children: ReactNode }) {
   // eslint-disable-next-line @tanstack/query/stable-query-client
   const queryClient = new QueryClient({
-		defaultOptions: {
-			queries: {
-				retry: false,
-			}
-		}
-	});
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }
 
-function createTestRouter(component: FC) {
+type RouteOptions = Omit<
+  TanstackRouteOptions,
+  "getParentRoute" | "path" | "component"
+>;
+
+function createTestRouter(component: FC, options?: RouteOptions) {
   const rootRoute = createRootRoute({
     component: Outlet,
   });
@@ -33,6 +39,7 @@ function createTestRouter(component: FC) {
     getParentRoute: () => rootRoute,
     path: "/",
     component,
+    ...options,
   });
 
   return createRouter({
@@ -42,14 +49,19 @@ function createTestRouter(component: FC) {
   });
 }
 
+type CustomRenderOptions = {
+  renderOptions?: RenderOptions;
+  routeOptions?: RouteOptions;
+  context?: AnyContext;
+};
+
 async function customRender(
   ui: FC,
-  context?: AnyContext,
-  options?: RenderOptions,
+  { context, renderOptions, routeOptions }: CustomRenderOptions = {},
 ) {
-  const router: any = createTestRouter(ui);
+  const router: any = createTestRouter(ui, routeOptions);
   return await act(async () =>
-    render(<RouterProvider router={router} context={context} />, options),
+    render(<RouterProvider router={router} context={context} />, renderOptions),
   );
 }
 

@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@/lib/test-utils";
 import "@testing-library/jest-dom/vitest";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import { afterAll, afterEach, beforeAll, expect, test } from "vitest";
+import { afterAll, afterEach, beforeAll, expect, test, vi } from "vitest";
 import { authBaseUrl, authHandlers } from "../../../mocks/handlers/auth";
 import LoginForm from "./login";
 
@@ -30,7 +30,12 @@ test("form is rendered correctly", async () => {
 });
 
 test("can login", async () => {
-  await render(LoginForm);
+  const beforeLoad = vi.fn();
+  await render(LoginForm, {
+    routeOptions: {
+      beforeLoad,
+    },
+  });
 
   const getLoginButton = () => screen.findByRole("button", { name: /login/i });
 
@@ -41,6 +46,7 @@ test("can login", async () => {
     target: { value: "1234" },
   });
   fireEvent.click(await getLoginButton());
+  expect(beforeLoad).toHaveBeenCalledOnce();
 
   expect(await getLoginButton()).toBeDisabled();
 });
